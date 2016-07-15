@@ -3,9 +3,11 @@
 ###Expecting creating a vactional path with each job's important background and each job's prospect.
 ***
 #####Library Used:
->######* data.table
->######* dplyr
->######* tidyr
->######* openxlsx
->######* arules
->######* stringr
+```
+library(data.table)
+library(dplyr)
+library(tidyr)
+library(openxlsx)
+library(arules)
+library(stringr)
+```
