@@ -14,6 +14,7 @@ dir.create('rscript', showWarnings = FALSE)
 dir.create('tmp', showWarnings = FALSE)
 
 ##Packages
+source("..\\manual-library\\forloop_loading.R", print.eval  = TRUE)
 library(data.table)
 library(dplyr)
 library(tidyr)
@@ -75,7 +76,8 @@ for(i in 1:(nrow(job.transfer)-1)){
     job.transfer_n[x,1:2] = c(job.transfer$name[i],job.transfer$name[i+1])
     x = x + 1
   }
-  cat("\r",(i/nrow(job.transfer)*100) %>% round(.,2) %>% format(.,nsmall=2), " %",rep(" ",15))
+  ##cat("\r",(i/nrow(job.transfer)*100) %>% round(.,2) %>% format(.,nsmall=2), " %",rep(" ",15))
+  forloop_loading(i,(nrow(job.transfer)-1),"Recording job tranfering overview ")
 }
 ##job.transfer_n$percentage <- NULL
 
@@ -107,7 +109,7 @@ job.list <- unique(job.list)
 total.transfer <- total.transfer %>% filter(original %in% job.list)
 total.transfer <- total.transfer %>% mutate(serial.num=0)
 
-##Seting serial numbers for the data set. Each job will have it's numbers counting from 1 to last.
+##Setting serial numbers for the data set. Each job will have it's numbers counting from 1 to last.
 for(i in 1:nrow(total.transfer)){
   if(i == 1){
     total.transfer$serial.num[i] = 1
@@ -116,7 +118,7 @@ for(i in 1:nrow(total.transfer)){
   }else{
     total.transfer$serial.num[i] = 1
   }
-  cat("\r",(i/nrow(total.transfer)*100) %>% round(.,2) %>% format(.,nsmall=2)," %",rep(" ",15))
+  forloop_loading(i,nrow(total.transfer),"Setting serial numbers for the data set")
 }
 
 ##Filter out data set which serial numbers are less than 11
@@ -132,7 +134,7 @@ tmp <- rep(NA_integer_,nrow(total.transfer))
 for(x in 1:nrow(total.transfer)){
   #Check if whether the after job has more number of management.
   tmp[x]<- ifelse(filter(management.n.table,job_name==total.transfer$after[x]) %>% select(weighted_n) %>% as.numeric > filter(management.n.table,job_name==total.transfer$original[x]) %>% select(weighted_n) %>% as.numeric,1,0)
-  cat("\r",(x/nrow(total.transfer)*100) %>% round(.,2) %>% format(.,nsmall=2)," %",rep(" ",15))
+  forloop_loading(x,nrow(total.transfer))
 }
 tmp[is.na(tmp)] <- 0
 total.transfer$prospect <- tmp
@@ -173,7 +175,7 @@ data.for.trans <- raw.data[,c("Â¾°È¤pÃþ¦WºÙ","³Ì°ª¾Ç¾ú","¬ì¨tÃþ§O","¹q¸£±Mªø","±
 #save.image("ready_to_apri")
 
 ##Run each jobs apriori's output.
-for(i in 157:length(unique(data.for.trans$Â¾°È¤pÃþ¦WºÙ))){
+for(i in 1:length(unique(data.for.trans$Â¾°È¤pÃþ¦WºÙ))){
   job <- unique(data.for.trans$Â¾°È¤pÃþ¦WºÙ)[i]
   tmp <- data.for.trans %>% filter(Â¾°È¤pÃþ¦WºÙ==job)
   
@@ -219,7 +221,7 @@ for(i in 157:length(unique(data.for.trans$Â¾°È¤pÃþ¦WºÙ))){
   
   ##Export
   write.csv(temp,paste0("output\\apriori\\", job,"background.csv"),row.names=F)
-  cat("\r",(i/length(unique(data.for.trans$Â¾°È¤pÃþ¦WºÙ))*100) %>% round(.,2) %>% format(.,nsmall=2)," %",rep(" ",15))
+  forloop_loading(i,length(unique(data.for.trans$Â¾°È¤pÃþ¦WºÙ)),paste0(job ,"\'s apriori"))
 }
 
 ##I think I should combine this output with previous output (Folder:percentage).
