@@ -90,6 +90,7 @@ tmp <- arrange(tmp,original,-Freq)
 none_assistant <- tmp %>% filter(!grepl("助理",after) & !grepl("助理",original))
 assistant <- tmp %>% filter(grepl("助理",original))
 total.transfer <- do.call(rbind,list(none_assistant,assistant)) ##just for practicing
+total.transfer <- total.transfer %>% group_by(original)
 total.transfer <-  total.transfer %>% mutate(percentage=Freq/sum(Freq))
 rm(tmp)
 write.csv(total.transfer,'tmp\\total.transfer.csv',row.names=F)
@@ -127,6 +128,7 @@ total.transfer <- total.transfer %>% filter(serial.num<11)
 #aggregate(total.transfer$percentage, by=list(Category=total.transfer$original), FUN=sum)
 
 ##I think 7 is a watershed.
+setDF(management.n.table)
 management.n.table[which(management.n.table[,8]<7),8] = 0
 
 
